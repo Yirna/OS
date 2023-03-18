@@ -5,6 +5,7 @@
 void kPrintString( int iX, int iY, const char* pcString);
 BOOL kInitializeKernel64Area( void );
 BOOL kIsMemoryEnough( void );
+void kCopyKernel64ImageTo2Mbyte( void );
 //Main
 
 void Main( void )
@@ -14,7 +15,7 @@ void Main( void )
 	DWORD dwEAX, dwEBX, dwECX, dwEDX;
 	char vcVendorString[ 13 ] = { 0, };
 
-	kPrintString( 0, 3, "C Language Kernel START.....................[PASS]");
+	kPrintString( 0, 3, "Protected Mode C Language Kernel Start......[Pass]");
 
 	kPrintString( 0, 4, "Minimum Memory Size Check.................. [    ]");
 
@@ -51,7 +52,7 @@ void Main( void )
 	*( DWORD* ) vcVendorString = dwEBX;
 	*( ( DWORD* ) vcVendorString + 1 ) = dwEDX;
 	*( ( DWORD* ) vcVendorString + 2 ) = dwECX;
-	kPrintString( 0, 7, "Processor Vendor String.....................[    ]" );
+	kPrintString( 0, 7, "Processor Vendor String.....................[            ]" );
 	kPrintString( 45, 7, vcVendorString );
 
 	//Check 64bit Support
@@ -68,9 +69,14 @@ void Main( void )
 		while( 1 );
 	}
 
+	//Move IA-32e Kernel to 0x200000(2Mbyte)
+	kPrintString(0, 9, "Copy IA-32e Kernel To 2M Address............[    ]" );
+	kCopyKernel64ImageTo2Mbyte();
+	kPrintString(45, 9, "Pass");
+
 	//convert to IA-32e mode
-	kPrintString( 0, 9, "Switch To IA-32e Mode" );
-	//kSwitchAndExecute64bitKernel();
+	kPrintString( 0, 10, "Switch To IA-32e Mode" );
+	kSwitchAndExecute64bitKernel();
 	while( 1 );
 
 
@@ -128,5 +134,28 @@ BOOL kIsMemoryEnough( void )
 		pdwCurrentAddress += ( 0x100000 / 4);
 	}
 	return TRUE;
+}
+
+//Copy IA-32e Mode Kernel to 0x200000(Mbyte address)
+void kCopyKernel64ImageTo2Mbyte( void )
+{
+	WORD wKernel32SectorCount, wTotalKernelSectorCount;
+	DWORD* pdwSourceAddress, * pdwDestinationAddress;
+	int i;
+
+	//0x7C05 = all Kernel sector num, 0x7C07 = securemode kernel sector num
+	wTotalKernelSectorCount = *( ( WORD* ) 0x7C05 );
+	wKernel32SectorCount = *( ( WORD* ) 0x7C07 );
+
+	pdwSourceAddress = ( DWORD* ) ( 0x10000 + ( wKernel32SectorCount * 512 ) );
+	pdwDestinationAddress = (DWORD* ) 0x200000;
+
+	for( i = 0; i < 512 * (wTotalKernelSectorCount - wKernel32SectorCount) / 4; i++)
+	{
+		*pdwDestinationAddress = *pdwSourceAddress;
+		pdwDestinationAddress++;
+		pdwSourceAddress++;
+	}
+
 }
 

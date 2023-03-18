@@ -43,7 +43,7 @@ CENTRYPOINTOBJECTFILE = Main.o
 CSOURCEFILES = $(wildcard ../$(SOURCEDIRECTORY)/*.c)
 ASSEMBLYSOURCEFILES = $(wildcard ../$(SOURCEDIRECTORY)/*.asm)
 COBJECTFILES = $(subst Main.o, , $(notdir $(patsubst %.c,%.o,$(CSOURCEFILES))))
-ASSEBLYOBJECTFILES = $(notdir $(patsubst %.asm,%.o,$(ASSEMBLYSOURCEFILES)))
+ASSEMBLYOBJECTFILES = $(notdir $(patsubst %.asm,%.o,$(ASSEMBLYSOURCEFILES)))
 		
 %.o: ../$(SOURCEDIRECTORY)/%.c
 		$(GCC32) -c $<

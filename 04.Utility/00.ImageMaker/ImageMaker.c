@@ -60,6 +60,12 @@ int main(int argc, char* argv[])
 	}
 
 	iSourceSize = CopyFile( iSourceFd, iTargetFd );
+	close( iSourceFd );
+
+	//to make file size to 512byte(Sector size) full remain part to 0x00
+	iBootLoaderSize = AdjustInSectorSize( iTargetFd, iSourceSize);
+	printf( "[INFO] %s size = [%d] and sector count = [%d]\n", argv[ 1 ], iSourceSize, iBootLoaderSize );
+
 
 	//------------------------------
 	//Copy all to open the 32bit kernel file to Disk img file
@@ -80,6 +86,9 @@ int main(int argc, char* argv[])
 	iKernel32SectorCount = AdjustInSectorSize( iTargetFd, iSourceSize );
 	printf( "[INFO] %s size = [%d] and sector count = [%d]\n", argv[ 2 ], iSourceSize, iKernel32SectorCount );
 
+	//---------------------------------------------------------------------
+	//Copy all opening 64bit kernel file to disk.img
+	//---------------------------------------------------------------------
 	printf( "[INFO] Copy IA-32e mode kernel to image file\n" );
 	if( ( iSourceFd = open( argv[ 3 ], O_RDONLY | O_BINARY ) ) == -1 )
 	{
@@ -98,7 +107,7 @@ int main(int argc, char* argv[])
 	//reload Kernel information to disk img
 	//------------------------------
 	printf( "[INFO] Start to Write Kernel Information\n" );
-	//Input Information of Kernel at 5th byte of Booto Sector
+	//Input Information of Kernel at 5th byte of Boot Sector
 	WriteKernelInformation( iTargetFd, iKernel32SectorCount + iKernel64SectorCount, iKernel32SectorCount );
 	printf( "[INFO] Image file create complete\n" );
 
@@ -125,9 +134,10 @@ int AdjustInSectorSize( int iFd, int iSourceSize )
 		{
 			write( iFd , &cCh , 1 );
 		}
-	}else
+	}
+	else
 	{
-		printf( ":[INFO] File size is aligned 512 bute\n");
+		printf( ":[INFO] File size is aligned 512 byte\n");
 	}
 
 	iSectorCount = (iSourceSize + iAdjustSizeToSector ) / BYTESOFSECTOR;
