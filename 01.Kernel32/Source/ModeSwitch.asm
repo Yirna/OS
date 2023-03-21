@@ -68,6 +68,7 @@ kSwitchAndExecute64bitKernel:
 	mov eax, 0x100000
 	mov cr3, eax
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;To set IA32_EFER.LME to 1, and Activate IA-32e mode
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -84,8 +85,9 @@ kSwitchAndExecute64bitKernel:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	mov eax, cr0			;Save CR0 Control reg to EAX reg
 	or eax, 0xE0000000		;Set NW bit(bit 29), CD bit(bit 30), PG bit(bit 31) to 1
-	xor eax, 0x6000000		;Xor calculate NW bit(bit 29) and CD bit(bit 30) to set 0
+	xor eax, 0x60000000		;Xor calculate NW bit(bit 29) and CD bit(bit 30) to set 0
 	mov cr0, eax			;Save setting value - NW bit = 0, CD bit = 0, PG bit = 1 to CR0 reg
+
 
 	jmp 0x08:0x200000		;Exchange CS segment Selector to IA-32e mode Code segment Discriptor
 							;and move to 0x200000(2MB) adress

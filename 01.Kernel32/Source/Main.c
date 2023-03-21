@@ -27,7 +27,7 @@ void Main( void )
 	}
 	else
 	{
-		kPrintString(45, 4, "PASS");
+		kPrintString(45, 4, "Pass");
 	}
 
 
@@ -40,12 +40,12 @@ void Main( void )
 		while( 1 ) ;
 	}
 
-	kPrintString(45, 5, "PASS" );
+	kPrintString(45, 5, "Pass" );
 
 	//Create Page Table for IA-32e mode
 	kPrintString(0, 6, "IA-32e Page Tables Initialize...............[    ]" );
 	kInitializePageTables();
-	kPrintString(45, 6, "PASS");
+	kPrintString(45, 6, "Pass");
 
 	//Read Information of Process manufacture company
 	kReadCPUID( 0x00, &dwEAX, &dwEBX, &dwECX, &dwEDX );
@@ -60,7 +60,7 @@ void Main( void )
 	kPrintString( 0, 8, "64bit Mode Support Check....................[    ]");
 	if( dwEDX & (1 << 29 ) )
 	{
-		kPrintString( 45, 8, "PASS" );
+		kPrintString( 45, 8, "Pass" );
 	}
 	else
 	{
@@ -76,6 +76,7 @@ void Main( void )
 
 	//convert to IA-32e mode
 	kPrintString( 0, 10, "Switch To IA-32e Mode" );
+
 	kSwitchAndExecute64bitKernel();
 	while( 1 );
 

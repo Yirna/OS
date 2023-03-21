@@ -137,7 +137,7 @@ int AdjustInSectorSize( int iFd, int iSourceSize )
 	}
 	else
 	{
-		printf( ":[INFO] File size is aligned 512 byte\n");
+		printf( "[INFO] File size is aligned 512 byte\n");
 	}
 
 	iSectorCount = (iSourceSize + iAdjustSizeToSector ) / BYTESOFSECTOR;
